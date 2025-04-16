@@ -1,0 +1,16 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Camera permission -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <!-- Internet permission (needed by Flutter) -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- Required for accessing images from gallery or storage -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- Declare that the app uses camera hardware -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+</manifest>

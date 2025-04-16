@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "682040771359",
+    "project_id": "chatter-bridge",
+    "storage_bucket": "chatter-bridge.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:682040771359:android:a588730ce30935359ba62a",
+        "android_client_info": {
+          "package_name": "com.example.chatter_bridge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "682040771359-6ruh7r4beoti173k2q230q76u7ltc69q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chatter_bridge",
+            "certificate_hash": "c9095a9717e702d15169698133c85d0869cb9f69"
+          }
+        },
+        {
+          "client_id": "682040771359-mhd0bcogf9b8ojtdtsqa7qhs6dt4ho9t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRI6YLRQ2monfANMA4K2GuAWED6FtosVg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "682040771359-mhd0bcogf9b8ojtdtsqa7qhs6dt4ho9t.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "682040771359-k3rhh6eojh6skbdpi626i2bjihnu75lg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.chatterBridge"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

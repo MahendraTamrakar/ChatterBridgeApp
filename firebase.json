@@ -1,0 +1,1 @@
+{"flutter":{"platforms":{"android":{"default":{"projectId":"chatter-bridge","appId":"1:682040771359:android:a588730ce30935359ba62a","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"chatter-bridge","configurations":{"android":"1:682040771359:android:a588730ce30935359ba62a","ios":"1:682040771359:ios:66dfe8490e597db19ba62a"}}}}}}
