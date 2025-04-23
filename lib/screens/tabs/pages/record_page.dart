@@ -1,3 +1,4 @@
+import 'package:chatter_bridge/screens/tabs/bookmark_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -5,7 +6,7 @@ import 'package:translator/translator.dart';
 import 'dart:math';
 
 class RecordTab extends StatefulWidget {
-  const RecordTab({Key? key}) : super(key: key);
+  const RecordTab({super.key});
 
   @override
   State<RecordTab> createState() => _RecordTabState();
@@ -92,9 +93,14 @@ class _RecordTabState extends State<RecordTab> with TickerProviderStateMixin {
     await flutterTts.speak(text);
   }
 
-  void _bookmarkTranslation() {
-    // Your bookmark saving logic
-    debugPrint("Bookmarked: $translatedText");
+  void _bookmarkTranslation() async {
+    if (translatedText.isNotEmpty && recognizedText.isNotEmpty) {
+      await BookmarkTabState.addBookmark(recognizedText, translatedText);
+      ScaffoldMessenger.of(
+        // ignore: use_build_context_synchronously
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Translation bookmarked!')));
+    }
   }
 
   @override
@@ -139,27 +145,24 @@ class _RecordTabState extends State<RecordTab> with TickerProviderStateMixin {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: DropdownButtonHideUnderline(
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: selectedOutputLang,
-                            isDense: true,
-                            icon: const Icon(Icons.keyboard_arrow_down),
-                            underline: const SizedBox(),
-                            items:
-                                langCode.keys
-                                    .map(
-                                      (lang) => DropdownMenuItem(
-                                        value: lang,
-                                        child: Text(lang),
-                                      ),
-                                    )
-                                    .toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                setState(() => selectedOutputLang = value);
-                              }
-                            },
-                          ),
+                        child: DropdownButton<String>(
+                          value: selectedOutputLang,
+                          isDense: true,
+                          icon: const Icon(Icons.keyboard_arrow_down),
+                          items:
+                              langCode.keys
+                                  .map(
+                                    (lang) => DropdownMenuItem(
+                                      value: lang,
+                                      child: Text(lang),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() => selectedOutputLang = value);
+                            }
+                          },
                         ),
                       ),
                     ),
@@ -196,9 +199,7 @@ class _RecordTabState extends State<RecordTab> with TickerProviderStateMixin {
               ],
             ),
           ),
-
           const SizedBox(height: 30),
-
           if (isListening)
             SizedBox(
               height: 40,
@@ -212,9 +213,7 @@ class _RecordTabState extends State<RecordTab> with TickerProviderStateMixin {
                 },
               ),
             ),
-
           const SizedBox(height: 16),
-
           GestureDetector(
             onTap: _startListening,
             child: CircleAvatar(
@@ -227,7 +226,6 @@ class _RecordTabState extends State<RecordTab> with TickerProviderStateMixin {
               ),
             ),
           ),
-
           const SizedBox(height: 30),
         ],
       ),

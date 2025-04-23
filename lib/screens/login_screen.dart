@@ -1,3 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures, use_build_context_synchronously
+
 import 'package:chatter_bridge/utilities/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -16,25 +18,35 @@ class _LoginScreenState extends State<LoginScreen> {
   final _password = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
+  String? _passwordError;
 
   Future<void> _loginWithEmail() async {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+      setState(() {
+        _isLoading = true;
+        _passwordError = null;
+      });
+
       try {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _email.text.trim(),
           password: _password.text.trim(),
         );
-
-        // Optional: Navigate to home/dashboard after login
-        // Navigator.pushReplacementNamed(context, homePageRoute);
+        if (!mounted) return;
         Navigator.of(
           context,
         ).pushNamedAndRemoveUntil(homePageRoute, (route) => false);
       } on FirebaseAuthException catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.message ?? 'Login failed')));
+        setState(() {
+          if (e.code == 'wrong-password') {
+            _passwordError = 'Incorrect password';
+          } else if (e.code == 'user-not-found') {
+            _passwordError = 'No user found with this email';
+          } else {
+            _passwordError = 'Incorrect Password';
+          }
+        });
+        _formKey.currentState!.validate();
       } finally {
         setState(() => _isLoading = false);
       }
@@ -44,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return; // User canceled
+      if (googleUser == null) return;
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
@@ -57,13 +69,11 @@ class _LoginScreenState extends State<LoginScreen> {
       final userCredential = await FirebaseAuth.instance.signInWithCredential(
         credential,
       );
-
+      if (!mounted) return;
       if (userCredential.user != null) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Signed in with Google')));
-
-        // ✅ Navigate to home after successful Google login
         Navigator.of(
           context,
         ).pushNamedAndRemoveUntil(homePageRoute, (route) => false);
@@ -73,6 +83,58 @@ class _LoginScreenState extends State<LoginScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text('Google Sign-In failed: $e')));
     }
+  }
+
+  void _showForgotPasswordDialog() {
+    // ignore: no_leading_underscores_for_local_identifiers
+    final TextEditingController _resetEmailController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Reset Password"),
+            content: TextField(
+              controller: _resetEmailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(hintText: "Enter your email"),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Cancel"),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final email = _resetEmailController.text.trim();
+                  if (email.isNotEmpty && email.contains('@')) {
+                    try {
+                      await FirebaseAuth.instance.sendPasswordResetEmail(
+                        email: email,
+                      );
+
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Password reset email sent"),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Enter a valid email")),
+                    );
+                  }
+                },
+                child: const Text("Send"),
+              ),
+            ],
+          ),
+    );
   }
 
   @override
@@ -90,8 +152,8 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.amber[200],
       body: Column(
         children: [
-          const SizedBox(height: 118),
-          Image.asset('assets/images/hello.png', width: 300),
+          const SizedBox(height: 50),
+          Image.asset('assets/images/hello2.png', width: 275),
           Expanded(
             child: Container(
               width: size.width,
@@ -162,14 +224,31 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                           ),
                         ),
-                        validator:
-                            (value) =>
-                                value!.length >= 6
-                                    ? null
-                                    : 'Password must be at least 6 characters',
+                        validator: (value) {
+                          if (value == null || value.isEmpty)
+                            return 'Enter password';
+                          if (value.length < 6)
+                            return 'Password must be at least 6 characters';
+                          if (_passwordError != null) return _passwordError;
+                          return null;
+                        },
                       ),
-                      const SizedBox(height: 8),
-                      Row(
+
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: _showForgotPasswordDialog,
+                          child: const Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 0, 62, 143),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      /* Row(
                         children: const [
                           Checkbox(value: false, onChanged: null),
                           Expanded(
@@ -189,7 +268,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 8), */
                       _isLoading
                           ? const CircularProgressIndicator()
                           : SizedBox(

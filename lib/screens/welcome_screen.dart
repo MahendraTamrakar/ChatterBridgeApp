@@ -73,9 +73,9 @@ class WelcomePage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Image.asset(
-                        'assets/images/hello.png',
+                        'assets/images/hello5.png',
                         width: 330,
-                        height: 400,
+                        height: 410,
                         alignment: Alignment(0, 2),
                       ),
                     ],

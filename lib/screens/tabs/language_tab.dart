@@ -12,6 +12,8 @@ class LanguageTab extends StatelessWidget {
     'France',
   ];
 
+  LanguageTab({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

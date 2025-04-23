@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:chatter_bridge/screens/tabs/bookmark_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:translator/translator.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -207,7 +208,7 @@ class _WritePageState extends State<WritePage> {
       // Speak the text
       var result = await flutterTts.speak(text);
       debugPrint('TTS result: $result');
-
+      if (!mounted) return;
       if (result != 1) {
         ScaffoldMessenger.of(
           context,
@@ -222,21 +223,12 @@ class _WritePageState extends State<WritePage> {
   }
 
   Future<void> _addToBookmarks(String original, String translated) async {
-    final prefs = await SharedPreferences.getInstance();
-    final List<String> bookmarks = prefs.getStringList('bookmarks') ?? [];
-    final newBookmark = jsonEncode({
-      'original': original,
-      'translated': translated,
-    });
-
-    if (!bookmarks.contains(newBookmark)) {
-      bookmarks.add(newBookmark);
-      await prefs.setStringList('bookmarks', bookmarks);
-      setState(() => isBookmarked = true);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Bookmark added!')));
-    }
+    await BookmarkTabState.addBookmark(original, translated);
+    setState(() => isBookmarked = true);
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Bookmark added!')));
   }
 
   Future<void> _checkIfBookmarked(String original, String translated) async {

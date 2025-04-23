@@ -2,6 +2,8 @@ import 'package:chatter_bridge/utilities/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'dart:developer' show log;
 
 class RegisterScreen extends StatefulWidget {
@@ -26,6 +28,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           email: _email.text.trim(),
           password: _password.text.trim(),
         );
+        if (!mounted) return;
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil(homePageRoute, (route) => false);
         log(user.toString());
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Registered successfully')),
@@ -44,12 +50,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
     try {
       final googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) return;
+
       final googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+      final user = userCredential.user;
+
+      // Save user data to Firestore
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'name': user.displayName,
+          'email': user.email,
+          'photoUrl': user.photoURL,
+        }, SetOptions(merge: true)); // merge to avoid overwriting
+      }
+
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Signed in with Google')));
@@ -78,8 +100,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: Colors.amber[200],
       body: Column(
         children: [
-          const SizedBox(height: 118),
-          Image.asset('assets/images/hello.png', width: 300),
+          const SizedBox(height: 55),
+          Image.asset('assets/images/hello3.png', width: 400),
           // const SizedBox(height: 4),
           Expanded(
             child: Container(
@@ -157,8 +179,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     ? null
                                     : 'Password must be at least 6 characters',
                       ),
-                      const SizedBox(height: 8),
-                      Row(
+                      const SizedBox(height: 20),
+
+                      /* Row(
                         children: const [
                           Checkbox(value: false, onChanged: null),
                           Expanded(
@@ -177,8 +200,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 8),
+                      ), */
                       _isLoading
                           ? const CircularProgressIndicator()
                           : SizedBox(

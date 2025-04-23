@@ -98,6 +98,7 @@ class _ScanTabState extends State<ScanTab> {
 
     existing.add(entry);
     await prefs.setStringList('bookmarks', existing);
+    if (!mounted) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Bookmark added')));

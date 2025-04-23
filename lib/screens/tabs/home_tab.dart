@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element, unreachable_switch_default
+
 import 'dart:async';
 import 'package:chatter_bridge/screens/tabs/pages/record_page.dart';
 import 'package:chatter_bridge/screens/tabs/pages/scan_page.dart';

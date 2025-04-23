@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "682040771359-ij3egu1pq4lacu22u6mg2m73a3hk1uqf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chatter_bridge",
+            "certificate_hash": "0e30c9e004843d861fbe929846f6e25228f670fb"
+          }
+        },
+        {
           "client_id": "682040771359-mhd0bcogf9b8ojtdtsqa7qhs6dt4ho9t.apps.googleusercontent.com",
           "client_type": 3
         }
